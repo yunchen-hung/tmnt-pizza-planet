@@ -18,7 +18,7 @@
 <script>
 
   // set the dimensions and margins of the graph
-  var margin = { top: 80, right: 70, bottom: 50, left: 70 },
+  var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = 460 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
@@ -66,12 +66,31 @@
       .attr("transform", "translate(-10,0)rotate(-45)")
       .style("text-anchor", "end");
 
+    // x axis text
+    svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("x", width)
+      .attr("y", height + margin.top + 20)
+      .style("font-size", "15px") 
+      .attr("font-family","sans-serif")
+      .text("Stars Given To Restaurant");
+
     // Add Y axis
     var y = d3.scaleLinear()
       .domain([0, 1])
       .range([height, 0]);
     svg.append("g")
       .call(d3.axisLeft(y));
+    
+    // Y axis label:
+    svg.append("text")
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -margin.left+20)
+        .attr("x", -margin.top)
+        .style("font-size", "15px") 
+        .attr("font-family","sans-serif")
+        .text("Proportion of Counts")
 
     // add title 
     svg.append("text")
@@ -79,7 +98,8 @@
         .attr("y", 0 - (margin.top / 2))            
         .attr("text-anchor", "middle")  
         .style("font-size", "15px") 
-        .text("Which State Should the Teenage Mutant Ninja Turtles Fly To For Pizza?");
+        .attr("font-family","sans-serif")
+        .text("Which State Should The TMNT Fly To For Pizza?");
 
     // Bars
     svg.selectAll("mybar")
