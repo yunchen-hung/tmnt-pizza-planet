@@ -1,9 +1,4 @@
-<!-- Code from d3-graph-gallery.com -->
-<!DOCTYPE html>
 <meta charset="utf-8">
-
-<!-- Load d3.js -->
-<script src="https://d3js.org/d3.v4.js"></script>
 
 <!-- Initialize a select button -->
 <select id="selectButton"></select>
@@ -13,7 +8,22 @@
 
 
 <script>
+  import { onMount } from 'svelte';
+  import * as d3 from 'd3';
 
+  let data = [];
+
+  onMount(async () => {
+
+    const res = await fetch('yelpilicious_data.csv'); 
+
+    const csv = await res.text();
+
+    data = d3.csvParse(csv, d3.autoType)
+
+    console.log(data);
+
+    });
   // set the dimensions and margins of the graph
   var margin = {top: 40, right: 70, bottom: 80, left: 70},
     width = 460 - margin.left - margin.right,
@@ -29,8 +39,6 @@
       "translate(" + margin.left + "," + margin.top + ")");
 
   // Read the data
-  d3.csv("static/yelpilicious_data.csv", function (data) {
-    console.log(data)
     // List of groups (each state is an option)
     var allGroup = d3.map(data, function (d) { return (d.state) }).keys()
 
@@ -140,8 +148,4 @@
       // run the updateChart function with this selected option
       update(selectedOption);
     })
-
-  })
-
-
 </script>
