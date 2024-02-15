@@ -113,7 +113,10 @@
       // Create new data with the selection?
       var dataFilter = data.filter(function (d) { return d.state == selectedGroup })
       // remove  bars
-      svg.selectAll("mybar").remove()
+      svg.selectAll("rect")
+        .transition()
+          .duration(100)
+        .remove()
       // Give these new data to update bar
       svg.selectAll("mybar")
         .data(dataFilter)
@@ -126,14 +129,16 @@
         .attr("width", x.bandwidth())
         .attr("height", function (d) { return height - y(+d.count); })
         .attr("fill", "#69b3a2")
-        .delay(function (d, i) { console.log(i); return (i * 100) })
+        .delay(function (d, i) {return (i * 100) })
     }
     // When the button is changed, run the updateChart function
     d3.select("#selectButton").on("change", function (d) {
       // recover the option that has been chosen
+      
       var selectedOption = d3.select(this).property("value")
       // run the updateChart function with this selected option
       update(selectedOption);
+      
     })
 
     });
