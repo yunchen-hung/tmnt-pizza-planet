@@ -23,9 +23,9 @@
 
     console.log(data);
 
-    var margin = {top: 40, right: 70, bottom: 80, left: 70},
-    width = 460 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    var margin = {top: 50, right: 70, bottom: 80, left: 70},
+    width = 600 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
     var svg = d3.select("#my_dataviz")
     .append("svg")
@@ -45,6 +45,13 @@
           .append('option')
           .text(d => d)
           .attr('value', d => d);
+    console.log(allGroup)
+
+    var myColor = d3.scaleOrdinal()
+      .domain(allGroup)
+      .range(["#332288", "#117733", "#44AA99", "#88CCEE", 
+      "#DDCC77", "#CC6677", "#AA4499", "#882255", 
+      "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#D55E00", "#CC79A7"]);
     
     var firstFilter = data.filter(function (d) { return d.state == allGroup[0] })
    
@@ -92,10 +99,9 @@
         .attr("x", (width / 2)) 
         .attr("y", 0 - (margin.top / 2))            
         .attr("text-anchor", "middle")  
-        .style("font-size", "15px") 
+        .style("font-size", "17px") 
         .attr("font-family","sans-serif")
-        .text("Which State Should The TMNT Fly To For Pizza?");
-
+        .text("Which State Should The Teenage Mutant Ninja Turtles Fly To For Pizza?");
     // Bars
     svg.selectAll("mybar")
       .data(firstFilter)
@@ -105,11 +111,11 @@
       .attr("y", function (d) { return y(+d.count); })
       .attr("width", x.bandwidth())
       .attr("height", function (d) { return height - y(+d.count); })
-      .attr("fill", "#69b3a2")
+      .style("fill", function(d){ return myColor(allGroup[0]) })
 
      // A function that update the chart
     function update(selectedGroup) {
-
+      console.log(myColor(selectedGroup))
       // Create new data with the selection?
       var dataFilter = data.filter(function (d) { return d.state == selectedGroup })
       // remove  bars
@@ -128,7 +134,7 @@
         .attr("y", function (d) { return y(+d.count); })
         .attr("width", x.bandwidth())
         .attr("height", function (d) { return height - y(+d.count); })
-        .attr("fill", "#69b3a2")
+        .attr("fill",  function(d){ return myColor(selectedGroup) })
         .delay(function (d, i) {return (i * 100) })
     }
     // When the button is changed, run the updateChart function
