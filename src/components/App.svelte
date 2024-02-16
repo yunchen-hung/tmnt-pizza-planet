@@ -75,7 +75,7 @@
       .attr("y", height + margin.top + 20)
       .style("font-size", "15px") 
       .attr("font-family","sans-serif")
-      .text("Stars Given To Restaurant");
+      .text("Stars Given To Pizza Restaurant");
     
     // Add Y axis
     var y = d3.scaleLinear()
@@ -92,7 +92,7 @@
         .attr("x", -margin.top)
         .style("font-size", "15px") 
         .attr("font-family","sans-serif")
-        .text("Proportion of Counts")
+        .text("Proportion of Counts For Each Review")
 
      // add title 
      svg.append("text")
@@ -112,17 +112,43 @@
       .attr("width", x.bandwidth())
       .attr("height", function (d) { return height - y(+d.count); })
       .style("fill", function(d){ return myColor(allGroup[0]) })
+      // add mean line 
+    console.log(d3.sum(firstFilter, d => d.stars * d.count))
+    svg.selectAll("mean")
+      .data(firstFilter)
+      .enter()
+      .append("line")
+      .style("stroke", "red")
+      .style("stroke-width", 2)
+      .attr("x1", ((width) / 5.9) * d3.sum(firstFilter, d => d.stars * d.count))
+      .attr("y1", 0)
+      .attr("x2", ((width) / 5.9) * d3.sum(firstFilter, d => d.stars * d.count))
+      .attr("y2", height);
 
      // A function that update the chart
     function update(selectedGroup) {
-      console.log(myColor(selectedGroup))
+      
       // Create new data with the selection?
       var dataFilter = data.filter(function (d) { return d.state == selectedGroup })
+      //const mean = d3.mean(dataFilter.values(count))
+      console.log(dataFilter)
+      
       // remove  bars
       svg.selectAll("rect")
         .transition()
           .duration(100)
         .remove()
+      // remove lines
+        svg.selectAll("line")
+        .transition()
+          .duration(100)
+        .remove()
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
       // Give these new data to update bar
       svg.selectAll("mybar")
         .data(dataFilter)
@@ -136,6 +162,18 @@
         .attr("height", function (d) { return height - y(+d.count); })
         .attr("fill",  function(d){ return myColor(selectedGroup) })
         .delay(function (d, i) {return (i * 100) })
+
+      console.log(d3.sum(dataFilter, d => d.stars * d.count))
+      svg.selectAll("mean")
+        .data(dataFilter)
+        .enter()
+        .append("line")
+        .style("stroke", "red")
+        .style("stroke-width", 2)
+        .attr("x1", ((width) / 5.9) * d3.sum(dataFilter, d => d.stars * d.count))
+        .attr("y1", 0)
+        .attr("x2", ((width) / 5.9) * d3.sum(dataFilter, d => d.stars * d.count))
+        .attr("y2", height);
     }
     // When the button is changed, run the updateChart function
     d3.select("#selectButton").on("change", function (d) {
