@@ -55,7 +55,10 @@
     
     var firstFilter = data.filter(function (d) { return d.state == allGroup[0] })
    
-
+    //x axis mean line
+    var xMean = d3.scaleLinear()
+  .range([30, width])
+  .domain([1, 5.3]); // Adjust the domain as needed
     // X axis
     var x = d3.scaleBand()
       .range([0, width])
@@ -102,6 +105,8 @@
         .style("font-size", "17px") 
         .attr("font-family","sans-serif")
         .text("Which State Should The Teenage Mutant Ninja Turtles Fly To For Pizza?");
+
+    
     // Bars
     svg.selectAll("mybar")
       .data(firstFilter)
@@ -119,11 +124,41 @@
       .enter()
       .append("line")
       .style("stroke", "red")
-      .style("stroke-width", 2)
-      .attr("x1", ((width) / 5.9) * d3.sum(firstFilter, d => d.stars * d.count))
+      .style("stroke-width", 4)
+      .attr("x1", function (d) { return xMean(d3.sum(firstFilter, d => d.stars * d.count)); })
       .attr("y1", 0)
-      .attr("x2", ((width) / 5.9) * d3.sum(firstFilter, d => d.stars * d.count))
-      .attr("y2", height);
+      .attr("x2", function (d) { return xMean(d3.sum(firstFilter, d => d.stars * d.count)); })
+      .attr("y2", height)
+      .append("title")  // Append a <title> element to each line
+      .text("The mean of the ratings are " + d3.sum(firstFilter, d => d.stars * d.count));   
+
+
+      //BOX with count
+      var boxWidth = 140;
+      var boxHeight = 50;
+      var boxX = width-75; 
+      var boxY = 20; 
+
+      // box
+      var textBox = svg.append("g")
+          .attr("transform", "translate(" + boxX + "," + boxY + ")");
+
+      // rectangle
+      textBox.append("rect")
+          .attr("width", boxWidth)
+          .attr("height", boxHeight)
+          .style("fill", "lightgray")
+          .style("stroke", "black");
+
+      // text
+      textBox.append("text")
+          .attr("x", boxWidth / 2)
+          .attr("y", boxHeight / 2)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .text("# of review(s): " + firstFilter[0].num_reviews);
+        console.log(firstFilter[0].num_reviews)
+      
 
      // A function that update the chart
     function update(selectedGroup) {
@@ -162,18 +197,41 @@
         .attr("height", function (d) { return height - y(+d.count); })
         .attr("fill",  function(d){ return myColor(selectedGroup) })
         .delay(function (d, i) {return (i * 100) })
-
+      //mean line
       console.log(d3.sum(dataFilter, d => d.stars * d.count))
       svg.selectAll("mean")
         .data(dataFilter)
         .enter()
         .append("line")
         .style("stroke", "red")
-        .style("stroke-width", 2)
-        .attr("x1", ((width) / 5.9) * d3.sum(dataFilter, d => d.stars * d.count))
+        .style("stroke-width", 4)
+        .attr("x1", function (d) { return xMean(d3.sum(dataFilter, d => d.stars * d.count)); })
         .attr("y1", 0)
-        .attr("x2", ((width) / 5.9) * d3.sum(dataFilter, d => d.stars * d.count))
-        .attr("y2", height);
+        .attr("x2", function (d) { return xMean(d3.sum(dataFilter, d => d.stars * d.count)); })
+        .attr("y2", height)
+        .append("title")  // Append a <title> element to each line
+        .text("The mean of the ratings are " + d3.sum(dataFilter, d => d.stars * d.count));   
+
+        //annotation
+        // box
+      var textBox = svg.append("g")
+          .attr("transform", "translate(" + boxX + "," + boxY + ")");
+
+      // rectangle
+      textBox.append("rect")
+          .attr("width", boxWidth)
+          .attr("height", boxHeight)
+          .style("fill", "lightgray")
+          .style("stroke", "black");
+
+      // text
+      textBox.append("text")
+          .attr("x", boxWidth / 2)
+          .attr("y", boxHeight / 2)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .text("# of review(s): " + dataFilter[0].num_reviews);
+        console.log(dataFilter[0].num_reviews)
     }
     // When the button is changed, run the updateChart function
     d3.select("#selectButton").on("change", function (d) {
